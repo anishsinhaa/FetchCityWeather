@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+  </head>
+  <body>
+    <h1>Weather App</h1>
+    <!-- Input for entering city names -->
+    <label for="cityInput">Enter city names (comma-separated): </label>
+    <input type="text" id="cityInput" />
+
+    <!-- Button to trigger the weather fetching process -->
+    <button onclick="getWeather(event)">Get Weather</button>
+
+    <!-- Display area for weather results -->
+    <div id="result"></div>
+
+    <script>
+      // Function to fetch weather data when the button is clicked
+      async function getWeather() {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Get the value from the city input field and split it into an array of cities
+        const cityInput = document.getElementById("cityInput").value;
+        const cities = cityInput.split(",").map((city) => city.trim());
+
+        // Make a POST request to the server to fetch weather data
+        const response = await fetch("http://localhost:3000/getWeather", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cities }),
+        });
+
+        // Parse the JSON response from the server
+        const result = await response.json();
+        console.log(result);
+
+        // Display the weather results in the resultDiv
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "<h2>Weather Results</h2>";
+
+        // Iterate over the cities in the result and display the temperature for each
+        for (const city in result) {
+          const temperature = result[city];
+          const p = document.createElement("p");
+          p.textContent = `${city}: ${temperature}`;
+          resultDiv.appendChild(p);
+        }
+      }
+    </script>
+  </body>
+</html>
